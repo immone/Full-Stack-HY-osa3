@@ -1,8 +1,14 @@
 const { response } = require('express')
+const morgan = require('morgan')
 const express = require('express')
 const app = express()
 
 app.use(express.json())
+app.use(morgan('tiny'))
+
+morgan.token('host', function(request, response) {
+                return JSON.stringify(request.body);
+            });
 
 
 let names = [
@@ -29,6 +35,8 @@ let names = [
     }
   ]
 
+app.use(morgan('url :status :res[content-length] - :response-time ms :host'))
+
 app.get('/info', (request, response) => {
     const currentDate = Date(Date.now())
     response.send(`Phonebook has info for ${names.length} people
@@ -36,7 +44,7 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-  response.json(names)
+  JSON.stringify(response.json(names))
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -54,7 +62,7 @@ app.post('/api/persons', (request, response) => {
     const name = request.body
     const randomID = Math.floor(Math.random() * 5000)
     name.id = randomID
-    names = names.concat(name)
+
     if (name.name === null || name.name === "") {
         response.status(404).send("Name missing")  
     } 
@@ -66,6 +74,7 @@ app.post('/api/persons', (request, response) => {
     }
     else
     {
+        names = names.concat(name)
         response.json(names)
     }
 })
