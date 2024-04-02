@@ -39,7 +39,7 @@ let names = [
     }
   ]
 
-app.use(morgan('url :status :res[content-length] - :response-time ms :host'))
+app.use(morgan(':url :status :res[content-length] - :response-time ms :host'))
 
 app.get('/info', (request, response) => {
     const currentDate = Date(Date.now())
@@ -62,12 +62,25 @@ app.get('/api/persons/:id', (request, response) => {
     
   })
 
+app.put('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    const newNumber = request.body
+    const numberIndex = names.findIndex(name => name.id === id)
+    names[numberIndex] = newNumber
+    if (numberIndex !== -1) {
+        response.json(names[numberIndex])
+      } else {
+        response.status(404).end()
+      }
+    
+})
+
 app.post('/api/persons', (request, response) => {
     const name = request.body
     const randomID = Math.floor(Math.random() * 5000)
     name.id = randomID
 
-    if (name.name === null || name.name === "") {
+    if (!name || name.name === null || name.name === "") {
         response.status(404).send("Name missing")  
     } 
     else if (name.number === null || name.number === "") {
@@ -79,7 +92,7 @@ app.post('/api/persons', (request, response) => {
     else
     {
         names = names.concat(name)
-        response.json(names)
+        response.json(name)
     }
 })
 
