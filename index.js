@@ -24,9 +24,15 @@ const errorHandler = (error, request, response, next) => {
     if (error.name === 'CastError') {
       return response.status(400).send({ error: 'malformatted id' })
     }
-  
+    else if (error.name === 'ValidationError') {
+        return response.status(400).send({ error: error.message })
+    }
     next(error)
 }
+
+app.get('/', (request, response) => {
+    response.send('<h1>Hello World!</h1>')
+}) 
 
 app.get('/info', (request, response) => {
     const currentDate = Date(Date.now())
@@ -58,19 +64,20 @@ app.get('/api/persons/:id', (request, response, next) => {
 })
 
 app.put('/api/persons/:id', (request, response, next) => {    
-    const newName = {
-        name: request.body.name,
-        number: request.body.number
-    }
+    const { name, number } = request.body
     
-    Name.findByIdAndUpdate(request.params.id, newName, {new : true})
+    Name.findByIdAndUpdate(
+        request.params.id, 
+        { name, number }, 
+        { new: true, runValidators: true, context: 'query'}
+    )
         .then(updatedName => {
             response.json(updatedName)
         })
         .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const name = request.body
 
     if (!name || name.name === null || name.name === "") {
@@ -87,16 +94,18 @@ app.post('/api/persons', (request, response) => {
     else
     {
         // No longer needed, since MongoDB handles this (?)
-        //const randomID = Math.floor(Math.random() * 5000)
+        // const randomID = Math.floor(Math.random() * 5000)
 
         const newName = new Name({
             name: name.name,
             number: name.number
         })
         
-        newName.save().then(savedName => {
+        newName.save()
+        .then(savedName => {
             response.json(savedName)
         })
+        .catch(error => next(error))
     }
 })
 
