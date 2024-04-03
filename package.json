@@ -8,11 +8,14 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf dist && cd ../FullStack-HY/osa2/puhelinluettelo && npm run build && cp -r dist /Users/antti.immonen/Desktop/uni/HY/FullStack-HY-osa3/",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+    "lint": "eslint ."
   },
   "author": "Antti Immonen",
   "license": "MIT",
   "devDependencies": {
+    "@stylistic/eslint-plugin-js": "^1.7.0",
+    "eslint": "^8.57.0",
     "nodemon": "^3.1.0"
   },
   "dependencies": {

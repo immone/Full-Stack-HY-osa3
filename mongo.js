@@ -21,24 +21,24 @@ const nameSchema = new mongoose.Schema({
 const Name = mongoose.model('Name', nameSchema)
 
 if (process.argv.length === 3){
-    Name.find({}).then(result => {
-        result.forEach(name => {
-          console.log(name)
-        })
-        mongoose.connection.close()
+  Name.find({}).then(result => {
+    result.forEach(name => {
+      console.log(name)
     })
+    mongoose.connection.close()
+  })
 }
 
 if (process.argv.length === 5){
-    const name = process.argv[3]
-    const number = process.argv[4]
-    const nameEntity = new Name({
-        name: name,
-        number: number
-      })
-    nameEntity.save().then(result =>  {
-        console.log(`added ${name} ${number} to phonebook`)
-        mongoose.connection.close()
-    })
+  const name = process.argv[3]
+  const number = process.argv[4]
+  const nameEntity = new Name({
+    name: name,
+    number: number
+  })
+  nameEntity.save().then(result =>  {
+    console.log(`added ${name} ${number} to phonebook`)
+    mongoose.connection.close()
+  })
 }
 
